@@ -1,0 +1,68 @@
+[
+  {
+    "generated_text": "{VARIANT:The attention mechanism|Self-attention} computes a weighted sum of value vectors, where the weights come from the similarity between query and key vectors. Scaled dot-product attention divides by √d_k to prevent gradient vanishing in high-dimensional spaces."
+  },
+  {
+    "generated_text": "{VARIANT:To train a classifier on a custom dataset|Fine-tuning a text classifier}, use the Hugging Face `Trainer` API: load a pre-trained model, tokenise your data with the model's tokeniser, define `TrainingArguments`, and call `trainer.train()`. Use `evaluate` for metrics."
+  },
+  {
+    "generated_text": "Quantisation {VARIANT:reduces model size|compresses weights} by representing weights in lower precision (INT8, INT4, or NF4). GPTQ applies post-training quantisation per-layer using a second-order error correction method. AWQ (Activation-aware Weight Quantisation) {VARIANT:preserves|identifies and protects} the 1% of weights most salient to activations."
+  },
+  {
+    "generated_text": "{VARIANT:LoRA (Low-Rank Adaptation)|LoRA fine-tuning} freezes the pre-trained model weights and injects trainable rank-decomposition matrices A and B into each attention layer. The weight update ΔW = BA has rank r ≪ d, reducing trainable parameters by 10,000x compared to full fine-tuning."
+  },
+  {
+    "generated_text": "Flash Attention {VARIANT:rewrites the attention computation|is an I/O-aware implementation of attention} to use tiling and recomputation, reducing HBM read/write operations from O(N²) to O(N). {VARIANT:It enables training on much longer sequences|This makes long-context models practical} without memory explosion."
+  },
+  {
+    "generated_text": "{VARIANT:Beam search generates text|Text generation with beam search} by maintaining the top-k partial sequences at each step and expanding each by one token, keeping only the top-k by cumulative log-probability. Greedy decoding (k=1) is faster but produces more repetitive output."
+  },
+  {
+    "generated_text": "Temperature {VARIANT:controls randomness|scales logits} before the softmax. At T=1 the distribution is unchanged; T<1 {VARIANT:sharpens|concentrates} the distribution (more deterministic); T>1 {VARIANT:flattens|broadens} it (more random). Top-p (nucleus) sampling then selects from the smallest set of tokens whose cumulative probability exceeds p."
+  },
+  {
+    "generated_text": "{VARIANT:The perplexity of a language model|Perplexity} is the exponentiated average negative log-likelihood per token: PP = exp(-1/N Σ log p(token_i)). {VARIANT:Lower perplexity means|A lower value indicates} the model assigns higher probability to the test corpus — it's {VARIANT:a measure of how well|an intrinsic metric for how well} the model predicts the data."
+  },
+  {
+    "generated_text": "RLHF (Reinforcement Learning from Human Feedback) {VARIANT:involves|has} three stages: supervised fine-tuning on demonstration data, reward model training from human preference rankings, and PPO optimisation of the language model against the reward model with a KL-divergence penalty to prevent reward hacking."
+  },
+  {
+    "generated_text": "{VARIANT:Tokenisation is the process of|Tokenisers split text into} subword units using algorithms like BPE (Byte-Pair Encoding) or WordPiece. BPE iteratively merges the most frequent adjacent byte pair. The vocabulary size is a hyperparameter — {VARIANT:larger vocabularies|bigger vocabs} mean shorter sequences but larger embedding tables."
+  },
+  {
+    "generated_text": "{VARIANT:Vector databases like Qdrant, Chroma, and Pinecone|Vector DBs} store high-dimensional embeddings and support approximate nearest-neighbour (ANN) search. {VARIANT:HNSW (Hierarchical Navigable Small World)|The HNSW index} is the dominant index structure — it achieves sub-millisecond search at billion-scale with tunable recall/speed trade-offs."
+  },
+  {
+    "generated_text": "Model distillation {VARIANT:trains a smaller student model|transfers knowledge} to mimic a larger teacher model's output distribution, not just its hard labels. The student minimises KL divergence from the teacher's softmax outputs (soft targets), which {VARIANT:carry more information|encode inter-class relationships} than one-hot labels."
+  },
+  {
+    "generated_text": "{VARIANT:Speculative decoding|Speculative sampling} speeds up autoregressive generation by using a small draft model to generate K tokens speculatively, then verifying all K with the large model in a single forward pass. {VARIANT:Accepted tokens come for free|Unaccepted tokens are resampled from the large model}. Speedup depends on the draft acceptance rate."
+  },
+  {
+    "generated_text": "{VARIANT:Mixtral uses a Mixture-of-Experts architecture|MoE models like Mixtral} where a learned router selects 2 of 8 expert FFN layers per token. Only the selected experts run, so compute is ~2x a 7B dense model despite having 46.7B total parameters. {VARIANT:This gives|The result is} dense-model quality at sparse-model inference cost."
+  },
+  {
+    "generated_text": "The context window {VARIANT:limits how much text|is the maximum number of tokens} a model can attend to in a single forward pass. Extending it requires modifications to positional encodings — RoPE (Rotary Position Embedding) {VARIANT:scales naturally with|generalises better to} longer contexts when combined with techniques like YaRN or LongRoPE."
+  },
+  {
+    "generated_text": "{VARIANT:Retrieval-augmented generation|RAG} reduces hallucination by grounding responses in retrieved documents. The key quality bottleneck is retrieval precision — if the wrong chunks are retrieved, the model either ignores them or confabulates. Re-ranking with a cross-encoder after ANN retrieval {VARIANT:significantly improves|measurably boosts} precision."
+  },
+  {
+    "generated_text": "{VARIANT:Function calling|Tool use} in LLMs allows the model to emit structured JSON that your application interprets as a tool invocation, executes, and feeds back as a context message. The model doesn't execute code — it generates a description of what tool to call and with what arguments."
+  },
+  {
+    "generated_text": "Rotary Position Embeddings (RoPE) {VARIANT:encode position by rotating|represent position via rotation of} the query and key vectors by an angle proportional to position. Unlike absolute embeddings, RoPE naturally {VARIANT:encodes relative position|represents relative distances} because the dot product of rotated vectors depends only on the difference in positions."
+  },
+  {
+    "generated_text": "{VARIANT:The KV cache|Key-Value cache} stores the key and value tensors from previous tokens so they don't need recomputing during autoregressive generation. Memory use scales as `2 × n_layers × n_heads × head_dim × seq_len × batch_size × dtype_bytes`. For long sequences and large batches, KV cache is often the binding memory constraint."
+  },
+  {
+    "generated_text": "{VARIANT:Continuous batching|Dynamic batching} in TGI and vLLM improves GPU utilisation by interleaving requests at the token level rather than waiting for all sequences in a batch to finish before starting new ones. {VARIANT:This dramatically reduces|This nearly eliminates} the tail latency penalty from long-running sequences in a batch."
+  },
+  {
+    "generated_text": "{VARIANT:PEFT (Parameter-Efficient Fine-Tuning)|Parameter-efficient methods} like LoRA, prefix tuning, and prompt tuning {VARIANT:add|inject} a small number of trainable parameters to a frozen base model. They reduce VRAM requirements by 10–100x during training and make it practical to {VARIANT:maintain|serve} many per-task adapters on a single GPU."
+  },
+  {
+    "generated_text": "{VARIANT:Evaluating a language model|LLM evaluation} requires task-specific benchmarks (MMLU for knowledge, HumanEval for code, MT-Bench for instruction following) and human preference evaluations. {VARIANT:Automated metrics like BLEU and ROUGE|n-gram metrics} are poor proxies for generation quality — {VARIANT:LLM-as-judge|using a stronger model as judge} is now the standard for open-ended tasks."
+  }
+]

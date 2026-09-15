@@ -1,0 +1,48 @@
+# ==== macOS ====
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+__MACOSX/
+
+# ==== Secrets and local config
+*.env
+.env
+.env.*
+/etc/inferd/
+hmac.key
+*.pem
+*.key
+*.crt
+id_rsa*
+id_github*
+*credentials*
+*secrets*
+# Keep decoy response pools even when their content mentions secrets.
+!honeypot/response_pools/**
+
+# ==== Data: DB, logs, raw captures (never ship real data) ====
+# SQLite, JSONL captures, service logs, and generated runtime state
+/data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.jsonl
+*.log
+
+# Python environments and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/

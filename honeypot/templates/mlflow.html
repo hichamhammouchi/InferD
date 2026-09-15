@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MLflow</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #1a1a2e; height: 100vh; display: flex; flex-direction: column; }
+  .topbar { background: #fff; border-bottom: 1px solid #e0e0e0; height: 56px; display: flex; align-items: center; padding: 0 20px; gap: 24px; flex-shrink: 0; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 32px; height: 32px; background: #0194E2; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 15px; }
+  .logo-text { font-size: 18px; font-weight: 700; color: #0194E2; }
+  .nav { display: flex; gap: 2px; margin-left: 8px; }
+  .nav-item { padding: 6px 14px; border-radius: 6px; font-size: 14px; cursor: pointer; color: #555; }
+  .nav-item:hover, .nav-item.active { background: #e8f4fd; color: #0194E2; }
+  .search { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .search input { padding: 7px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; width: 220px; }
+  .layout { display: flex; flex: 1; overflow: hidden; }
+  .sidebar { width: 220px; background: #fff; border-right: 1px solid #e0e0e0; padding: 16px 0; flex-shrink: 0; overflow-y: auto; }
+  .sidebar-section { margin-bottom: 4px; }
+  .sidebar-title { padding: 6px 16px; font-size: 11px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; }
+  .sidebar-item { padding: 7px 16px; font-size: 13px; cursor: pointer; color: #444; display: flex; align-items: center; gap: 8px; }
+  .sidebar-item:hover, .sidebar-item.active { background: #e8f4fd; color: #0194E2; }
+  .sidebar-item .dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; flex-shrink: 0; }
+  .main { flex: 1; overflow-y: auto; padding: 24px; }
+  .page-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #222; }
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .btn { padding: 7px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #444; }
+  .btn:hover { background: #f5f5f5; }
+  .btn.primary { background: #0194E2; color: #fff; border-color: #0194E2; }
+  .table-wrap { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #f8f8f8; padding: 10px 14px; text-align: left; font-weight: 500; color: #666; border-bottom: 1px solid #e0e0e0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+  td { padding: 10px 14px; border-bottom: 1px solid #f0f0f0; color: #333; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafafa; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; background: #e8f4fd; color: #0194E2; }
+  .tag.green { background: #e6f4ea; color: #1e7e34; }
+  .tag.grey { background: #f0f0f0; color: #777; }
+  .metric { font-family: monospace; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">M</div>
+    <div class="logo-text">MLflow</div>
+  </div>
+  <div class="nav">
+    <div class="nav-item active">Experiments</div>
+    <div class="nav-item">Models</div>
+    <div class="nav-item">Deployments</div>
+  </div>
+  <div class="search">
+    <input placeholder="Search experiments…" type="text"/>
+    <button class="btn primary">New Experiment</button>
+  </div>
+</div>
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Experiments</div>
+      <div class="sidebar-item active"><div class="dot"></div>gpt-finetune-v3</div>
+      <div class="sidebar-item"><div class="dot"></div>embedding-eval</div>
+      <div class="sidebar-item"><div class="dot" style="background:#9E9E9E"></div>Default</div>
+    </div>
+    <div class="sidebar-section" style="margin-top:16px">
+      <div class="sidebar-title">Tags</div>
+      <div class="sidebar-item">🏷 production</div>
+      <div class="sidebar-item">🏷 llm</div>
+      <div class="sidebar-item">🏷 embedding</div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="page-title">gpt-finetune-v3</div>
+    <div class="toolbar">
+      <button class="btn">Compare</button>
+      <button class="btn">Download CSV</button>
+      <button class="btn primary">New Run</button>
+      <span style="margin-left:auto;font-size:13px;color:#888">Showing 6 of 6 runs</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Run Name</th>
+            <th>Created</th>
+            <th>Status</th>
+            <th>Duration</th>
+            <th>train/loss</th>
+            <th>eval/loss</th>
+            <th>eval/accuracy</th>
+            <th>Model</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="checkbox"/></td>
+            <td><a style="color:#0194E2;cursor:pointer">llama3-lora-r16-epoch3</a></td>
+            <td style="color:#888">2026-05-20 14:32</td>
+            <td><span class="tag green">FINISHED</span></td>
+            <td>2h 14m</td>
+            <td class="metric">0.8421</td>
+            <td class="metric">0.9103</td>
+            <td class="metric">0.8342</td>
+            <td><span class="tag">Llama-3.1-8B</span></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"/></td>
+            <td><a style="color:#0194E2;cursor:pointer">llama3-lora-r8-epoch3</a></td>
+            <td style="color:#888">2026-05-19 10:11</td>
+            <td><span class="tag green">FINISHED</span></td>
+            <td>1h 58m</td>
+            <td class="metric">0.9102</td>
+            <td class="metric">0.9871</td>
+            <td class="metric">0.8104</td>
+            <td><span class="tag">Llama-3.1-8B</span></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"/></td>
+            <td><a style="color:#0194E2;cursor:pointer">mistral-lora-baseline</a></td>
+            <td style="color:#888">2026-05-18 08:44</td>
+            <td><span class="tag green">FINISHED</span></td>
+            <td>1h 22m</td>
+            <td class="metric">1.1234</td>
+            <td class="metric">1.2045</td>
+            <td class="metric">0.7812</td>
+            <td><span class="tag">Mistral-7B</span></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"/></td>
+            <td><a style="color:#0194E2;cursor:pointer">llama3-full-finetune</a></td>
+            <td style="color:#888">2026-05-15 22:01</td>
+            <td><span class="tag" style="background:#fff3e0;color:#e65100">KILLED</span></td>
+            <td>0h 43m</td>
+            <td class="metric">—</td>
+            <td class="metric">—</td>
+            <td class="metric">—</td>
+            <td><span class="tag">Llama-3.1-70B</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>

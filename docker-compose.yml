@@ -1,0 +1,51 @@
+services:
+  inferd:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: inferd:latest
+    container_name: inferd
+
+    # host network mode
+    # Bypasses Docker's userland proxy NAT. Without this, every connection
+    # appears to originate from 172.17.0.1 (Docker gateway), permanently
+    # corrupting the dataset. With host mode, request.client.host is the
+    # real attacker IP at the host NIC.
+    # Port mapping flags (-p) are invalid in host mode - ports bind directly.
+    # Host networking preserves the real client IP and lets the host iptables
+    # uid-owner rule govern this process's egress. Linux only.
+    network_mode: host
+
+    restart: unless-stopped
+
+    # Volumes
+    volumes:
+      # Log data and SQLite database - persisted on host root disk.
+      - /data:/data
+
+      # Env config, root-owned on host.
+      - /etc/inferd:/etc/inferd:ro
+
+      # GeoIP database - updated weekly by geoipupdate cron.
+      - /usr/share/GeoIP:/usr/share/GeoIP:ro
+
+      # Application code, maintenance scripts, and supervisor configuration are
+      # baked into the image. Rebuild the image to deploy a code change.
+
+    # Prevents a runaway scanner from consuming all host memory.
+    # 6 GB leaves 2 GB for Nginx, OS, and host processes.
+    mem_limit: 6g
+    memswap_limit: 6g    
+
+    # Environment
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+
+    # Service-level logs go to /data/logs/ via supervisord.
+    # Docker-level logs (supervisord stdout) are minimal.
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
